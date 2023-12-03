@@ -1,6 +1,14 @@
 {
     "Lua.diagnostics.globals": [
         "substituteWordNumbers",
-        "retrieveDigitsFromInput"
+        "retrieveDigitsFromInput",
+        "getGameId",
+        "hintValid",
+        "isGameValid",
+        "isHintValid",
+        "getCountOfColor",
+        "getGameSetIterator",
+        "getMarbleSetIterator",
+        "getPowerOfGame"
     ]
 }
