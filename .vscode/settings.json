@@ -17,6 +17,9 @@
         "parseCurrentLineToPreviousLineSymbols",
         "gears",
         "parseGearFromPreviousLine",
-        "sandwichParse"
+        "sandwichParse",
+        "getWinningNumbers",
+        "getPointOfCard",
+        "getNumberOfCardCopies"
     ]
 }
