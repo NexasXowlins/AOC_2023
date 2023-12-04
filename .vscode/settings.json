@@ -9,6 +9,14 @@
         "getCountOfColor",
         "getGameSetIterator",
         "getMarbleSetIterator",
-        "getPowerOfGame"
+        "getPowerOfGame",
+        "parseCurrentLine",
+        "getNumberBeforeSymbol",
+        "getNumberAfterSymbol",
+        "parseCurrentSymbolToPreviousLine",
+        "parseCurrentLineToPreviousLineSymbols",
+        "gears",
+        "parseGearFromPreviousLine",
+        "sandwichParse"
     ]
 }
