@@ -1,3 +1,9 @@
+--[[
+    It's easy to do this by reading the whole file into a 2d array structure then looping through each digit in each line
+    and doing a coordinate scan to compute the values. But that's not scaleable. And that could be potentially scaled by only
+    reading in 3 lines at a time and iterating through those in a 2d array. But I wanted to see if I could potentially do it
+    by reading through the file once. And not trying to break each line into array structure which lua does not do easily. 
+]]
 function parseCurrentLine(inputLine)
     local tableIndex = 1
     local tableIndexOfSymbols = {}
@@ -125,7 +131,8 @@ function gears(inputLine)
             if (numberBeforeSymbol ~= nil ) then gearToTest = numberBeforeSymbol
             else gearToTest = numberAfterSymbol end
             sumOfValidGears = sumOfValidGears + parseGearFromPreviousLine(startIndex, gearToTest)
-         end
+        end
+        sumOfValidGears = sumOfValidGears + checkForTwoDigitsAsNeighbors(startIndex, PREVIOUS_LINE)
         startIndex = inputLine:find("[*]", startIndex +1)
         tableIndex = tableIndex + 1
     end
@@ -154,6 +161,27 @@ function parseGearFromPreviousLine(indexPfAsterisk, nearbyGear)
     return gearDigits;
 end
 
+function checkForTwoDigitsAsNeighbors(indexOfSymbol, inputLine)
+    local twoDigittNeighbors = 0
+    local startIndex, endIndex = inputLine:find("%d+")
+    local nextDigitStart, nextDigitEnd = inputLine:find("%d+", endIndex+1)
+    while (startIndex ~= nil and nextDigitStart ~= nil) do
+        if(nextDigitEnd-nextDigitStart == 1 and endIndex <= indexOfSymbol and indexOfSymbol <= nextDigitStart) then
+            local number1 = inputLine:sub(startIndex,endIndex)
+            local number2 = inputLine:sub(nextDigitStart, nextDigitEnd)
+            twoDigittNeighbors = twoDigittNeighbors + (tonumber(number1)*tonumber(number2))
+        end
+        startIndex = nextDigitStart
+        endIndex = nextDigitEnd
+        if (nextDigitEnd < #inputLine) then
+            nextDigitStart, nextDigitEnd =  inputLine:find("%d+", nextDigitEnd+1)
+        else
+            nextDigitStart = nil
+        end
+    end
+    return twoDigittNeighbors
+end
+
 function sandwichParse(inputLine)
     local sandwichGearsSum = 0
     local startIndex, endIndex = inputLine:find("%d+")
@@ -165,7 +193,7 @@ function sandwichParse(inputLine)
                 --if it align now check top line digits
                 local previousMinusOneStart, previousMinusOneEnd = PREVIOUS_LINE_MINUS_ONE:find("%d+")
                 while (previousMinusOneStart ~= nil) do
-                    if (previousMinusOneStart <= index and index <= previousMinusOneEnd+1) then
+                    if (previousMinusOneStart-1 <= index and index <= previousMinusOneEnd+1) then
                         --sandwich found now generate the gear
                         local topNumber = PREVIOUS_LINE_MINUS_ONE:sub(previousMinusOneStart, previousMinusOneEnd)
                         local bottomNumber = inputLine:sub(startIndex, endIndex)
@@ -176,6 +204,9 @@ function sandwichParse(inputLine)
             end
         end
         startIndex, endIndex = inputLine:find("%d+", endIndex + 1)
+    end
+    for i, index in ipairs(PREVIOUS_LINE_SYMBOL_TABLE) do
+        sandwichGearsSum = sandwichGearsSum + checkForTwoDigitsAsNeighbors(index, inputLine)
     end
     return sandwichGearsSum
 end

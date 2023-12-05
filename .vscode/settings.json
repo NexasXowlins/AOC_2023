@@ -20,6 +20,24 @@
         "sandwichParse",
         "getWinningNumbers",
         "getPointOfCard",
-        "getNumberOfCardCopies"
+        "getNumberOfCardCopies",
+        "checkForTwoDigitsAbove",
+        "checkForTwoDigitsAsNeighbors",
+        "parseLine",
+        "parseSeed",
+        "updateSeedTable",
+        "getMappedValue",
+        "parseRangeSeedLine",
+        "getLowestLocaton",
+        "parseLineSolution2",
+        "overlap",
+        "getIntersection",
+        "mapEntryToNextRange",
+        "getNewRange",
+        "mapEntryToLowerTable",
+        "findLowestLocation",
+        "mapSubRangeToLowerTable",
+        "orderMapsAndCondense",
+        "runit"
     ]
 }
