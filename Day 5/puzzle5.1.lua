@@ -6,12 +6,14 @@ function parseLine(inputLine)
         local sourceStart = nil
         local range = nil
         local index = 1
+        --grab our values for each line
         for number in inputLine:gmatch("[^%s]+") do
             if (index==1) then destinationStart = tonumber(number)
             elseif (index==2) then sourceStart = tonumber(number)
             elseif (index==3) then range = tonumber(number) end
             index = index +1
         end
+        -- go ahead and update all our seeds based on this line input. essentially building the mapping as we read each line and updating the value for each entity
         for i,seed in pairs(SEED_TABLE) do
             if (DATA_BEING_READ == "seed-to-soil map:" and (seed.soil == 0 or seed.soil == i)) then
                 seed.soil = getMappedValue(i,destinationStart, sourceStart, range)
@@ -100,7 +102,7 @@ function parseLineSolution2(inputLine)
         end
     end
 end
-
+--[[Parses the seed line into it's ranges and creates a range entry in the seed table]]
 function parseRangeSeedLine(inputLine)
     local seedList = inputLine:gsub("seeds:%s*", "")
     local seedStart = nil
@@ -124,7 +126,10 @@ function getLowestLocaton()
     end
     return location
 end
-
+--[[Now that we have the tables filled out. Go ahead and order them in the list by their from value.
+    this allows us to short cut updating the ranges as we need to. Because as soon as we find a range we are in
+    we can stop our current loop
+]]
 function orderMapsAndCondense()
     table.sort(SEED_TO_SOIL_RANGES, function(entry1, entry2) return entry1.from < entry2.from end )
     table.sort(SOIL_TO_FERTILIZER_RANGES, function(entry1, entry2) return entry1.from < entry2.from end )
@@ -133,27 +138,36 @@ function orderMapsAndCondense()
     table.sort(LIGHT_TO_TEMPERATURE_RANGES, function(entry1, entry2) return entry1.from < entry2.from end )
     table.sort(TEMPERATURE_TO_HUMIDTY_RANGES, function(entry1, entry2) return entry1.from < entry2.from end )
     table.sort(HUMIDITY_TO_LOCATION_RANGES, function(entry1, entry2) return entry1.from < entry2.from end )
+    --create a table of tables
     MAPS = {SEED_TO_SOIL_RANGES, SOIL_TO_FERTILIZER_RANGES, FERTILIZER_TO_WATER_RANGES, WATER_TO_LIGHT_RANGES, LIGHT_TO_TEMPERATURE_RANGES,TEMPERATURE_TO_HUMIDTY_RANGES,HUMIDITY_TO_LOCATION_RANGES}
 end
 
 function runit()
     local ranges = {}
     for i,seed in pairs(SEED_TABLE) do
+        --generate the initial ranges to check
         ranges[i] = {from = seed.sourceStart, to = seed.sourceStart + seed.range}
     end
 
     for _,map in pairs(MAPS) do
+        --see if we can make any new ranges from each map
         local newRanges = {}
         for _,range in pairs(ranges) do
+            --start with our current ranges
             for _,mapping in pairs(map) do
+                --check each range that existed in this map
                 if (range.from < mapping.from) then
+                    --if the starting range from is less than the first ranges from then we can check if we can expand the current range
+                    --this either makes a range that includes our overlapping, or just returns the same range we have.  
                     table.insert(newRanges, {from = range.from, to = math.min(range.to, mapping.from)})
                     range.from = mapping.from
+                    --this basically checking if our range has now reached its end to be checked. If it has then we can stop
+                    --otherwise we need to check the other ranges in this map
                     if (range.from > range.to) then
                         break
                     end
                 end
-
+                --this does the same as above but checks for the overlap to the left of the range
                 if (range.from <= mapping.to) then
                     table.insert(newRanges, {from =  range.from + mapping.adjustment, to = math.min(range.to, mapping.to) + mapping.adjustment})
                     range.from = mapping.to
@@ -162,13 +176,16 @@ function runit()
                     end
                 end
             end
+            --if we have a valid new range add it to our new list
             if (range.from <= range.to) then
                 table.insert(newRanges,range)
             end
         end
+        --reset the ranges for the next loop
         ranges = newRanges
     end
     local min = math.huge
+    --now that we have an ordered list. down to the location ranges only. We can find the smallest from value
     for i,v in pairs(ranges) do
         min = math.min(min, v.from)
     end
@@ -192,6 +209,7 @@ end
 
 print("Solution 1 Lowest Seed Location: "..getLowestLocaton())
 
+--[[Solution 2 requires some finessing and doing range subtraction so build the ranges for each mapping]]
 HUMIDITY_TO_LOCATION_RANGES = {}
 TEMPERATURE_TO_HUMIDTY_RANGES = {}
 LIGHT_TO_TEMPERATURE_RANGES = {}

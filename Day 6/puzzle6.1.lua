@@ -19,12 +19,17 @@ function parseInput(inputLine)
 
  function calculateMarginOfError()
     local marginOfErrorTotal = nil
+    --foreach time entry see if there was a winning distance
     for i, time in ipairs(TIME_TABLE) do
         local numWaysToWin = 0
+        --you can't win if you don't press the button at least one second, and you can't win if you press it for all the seconds
         for x=1, time-1 do
+            --you distance is your speed times the how many seconds you have left, and your speed was how many seconds your held
             local wayToWin = x*(time-x)
+            -- increments wins
             if (wayToWin > DISTANCE_TABLE[i]) then numWaysToWin =  numWaysToWin + 1 end
         end
+        --generate margin
         if (marginOfErrorTotal == nil) then marginOfErrorTotal = numWaysToWin else marginOfErrorTotal = marginOfErrorTotal*numWaysToWin end
     end
     return marginOfErrorTotal
