@@ -38,6 +38,10 @@
         "findLowestLocation",
         "mapSubRangeToLowerTable",
         "orderMapsAndCondense",
-        "runit"
+        "runit",
+        "parseToTable",
+        "parseInput",
+        "calculateMarginOfError",
+        "calculateMarginOfError2"
     ]
 }
