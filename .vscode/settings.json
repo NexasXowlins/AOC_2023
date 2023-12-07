@@ -42,6 +42,9 @@
         "parseToTable",
         "parseInput",
         "calculateMarginOfError",
-        "calculateMarginOfError2"
+        "calculateMarginOfError2",
+        "parseHandInput",
+        "compareHands",
+        "lengthOfTable"
     ]
 }
